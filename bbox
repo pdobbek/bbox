@@ -1,0 +1,119 @@
+  #!/bin/bash
+
+  # Simple bash script to backup files either in the original file's directory or
+  # in the standard Dropbox directory (~/Dropbox/).
+  # Copyright (C) 2020  Patryk Dobbek (pdobbek@gmail.com)
+
+  # This program is free software: you can redistribute it and/or modify
+  # it under the terms of the GNU General Public License as published by
+  # the Free Software Foundation, either version 3 of the License, or
+  # (at your option) any later version.
+
+  # This program is distributed in the hope that it will be useful,
+  # but WITHOUT ANY WARRANTY; without even the implied warranty of
+  # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  # GNU General Public License for more details.
+
+  # You should have received a copy of the GNU General Public License
+  # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# Author: Written by Patryk Dobbek (pdobbek@gmail.com)
+# Created 2020-06-06
+
+# todo:i
+# -Comment out code.
+# -Add option for backing up both locally and in Dropbox at the same time.
+# -Change backup file name so they inlcude ~ as last char.
+# -Add option for clearing backup files.
+# -Add option for having only one backup file at a time (or no more than a set
+# number).
+# -Add better getopts. Currently can't have separate args (e.g. -r -d), they
+# have to be typed together (e.g. -rd).
+# -Drop to_dropbox and other Dropbox mentions and replace with custom bbox
+# folder. Allow the user to specify their own destination folder.
+
+function echo_script_usage(){
+    echo "script usage: backup [-d] [-r] [filename]"
+}
+
+if [ $# -eq 0 ]; then
+    echo_script_usage
+    exit 1
+fi
+
+if [ $1 = "--version" ]; then
+    echo "bbox 1.0.1"
+    exit 0
+fi
+
+to_dropbox=false
+restore=false
+
+
+while getopts "dr" opt; do
+    case ${opt} in
+    d)	shift "$(($OPTIND -1))"
+    	to_dropbox=true
+	;;
+    
+    r)	shift "$(($OPTIND -1))"	
+	restore=true
+	;;
+
+    ?)	echo_script_usage
+	exit 1
+	;;
+    esac
+done
+
+
+dropbox_dir=~/Dropbox/bbox/
+file_name=""
+file_dir=""
+backup_name=""
+backup_dir=""
+backup_path=""
+fcheck_str=""
+
+if [ "$to_dropbox" = true ] && [ ! -d "$dropbox_dir" ]; then
+    if [ ! -d ~/hshsh ]; then
+	echo "bbox: cannot access Dropbox directory."
+	exit 1
+    fi
+    mkdir ~/Dropbox/bbox/
+fi
+
+function parse_directory(){
+    file_name=$(basename "$1")
+    file_dir=$(realpath "$1" | sed -re 's/[^/]+$//g')
+    backup_name=".${file_name}.backup.$(date +%F_%R)"
+    if [ "$to_dropbox" = true ]; then
+	backup_dir=$dropbox_dir
+    else
+	backup_dir=$file_dir
+    fi
+    backup_path=${backup_dir}${backup_name}
+    fcheck_str=${backup_dir}.${file_name}.backup.*
+}
+
+if [ "$restore" = true ]; then
+    for FILE1 in "$@"
+	do
+	    parse_directory $FILE1   
+	    if [[ $(ls -A ${fcheck_str} 2>/dev/null) ]]; then
+		latest_backup=$(ls -Ar ${backup_dir}.${file_name}.backup.* | head -1)
+		cp $latest_backup $FILE1
+    	    else
+		echo bbox: could not find backup file for $FILE1 in $backup_dir
+	    fi
+	done
+    exit 0
+fi
+
+for FILE1 in "$@"
+    do
+	parse_directory $FILE1
+	cp $FILE1 $backup_path
+    done
+
+
