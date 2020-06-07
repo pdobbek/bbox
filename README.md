@@ -8,10 +8,10 @@ me know. I am a novice programmer and welcome any input.
 - Patryk (pdobbek@gmail.com)
 
 
-Current roadmap for future bbox features:
 # todo:
 # -Comment out code.
-# -Add option for backing up both locally and in Dropbox at the same time.
+# -Add option for backing-up both locally and in Dropbox at the same time.
+# -Add option for saving to a hidden backup folder when backing-up locally.
 # -Change backup file name so they inlcude ~ as last char.
 # -Add option for clearing backup files.
 # -Add option for having only one backup file at a time (or no more than a set

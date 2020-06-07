@@ -76,11 +76,11 @@ backup_path=""
 fcheck_str=""
 
 if [ "$to_dropbox" = true ] && [ ! -d "$dropbox_dir" ]; then
-    if [ ! -d ~/hshsh ]; then
-	echo "bbox: cannot access Dropbox directory."
-	exit 1
+    if [ ! -d ~/Dropbox/ ]; then
+	      echo "bbox: cannot access Dropbox directory."
+	      exit 1
     fi
-    mkdir ~/Dropbox/bbox/
+    mkdir $dropbox_dir
 fi
 
 function parse_directory(){
