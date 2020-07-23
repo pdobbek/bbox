@@ -5,7 +5,7 @@ Dropbox directory (~/Dropbox/). Meant to be provide a simple terminal backup ser
 bbox was created partly to serve my own needs and also as an exercise. There are probably better ways
 of doing what bbox is doing. If you spot some glaring errors, whether in design or code, please let
 me know. I am a novice programmer and welcome any input.
-- Patryk (pdobbek@gmail.com)
+- Patryk (p.dobbek@protonmail.com)
 
 
 # todo:
